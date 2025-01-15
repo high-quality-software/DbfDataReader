@@ -3,6 +3,7 @@ using dbf2sql.Options;
 using DbfDataReader;
 using DS.Foundation.Configuration;
 using Microsoft.Data.SqlClient;
+using MySqlConnector;
 using System.Globalization;
 using System.Text;
 
@@ -46,22 +47,25 @@ namespace dbf2sql
                     }
 
                     // Generar el CREATE TABLE a partir del archivo .dbf
-                    var options = new DbfFileOptions { Filename = filePath, SkipDeleted = false };
-                    string querry = GetSchema(options);
+                    var options = new DbfFileOptions { Filename = filePath, SkipDeleted = true };
+                    string query = GetSchema(options);
                     
-                    Console.WriteLine(querry);
+                    Console.WriteLine(query);
 
                     if (sql.Execute)
                     {
                         try
                         {
-                            using var connection = new SqlConnection(connectionString);
-                            connection.Open();
+                            using (var connection = new SqlConnection(connectionString))
+                            {
+                                connection.Open();
 
-                            using var command = new SqlCommand(querry, connection);
-                            command.ExecuteNonQuery();
-
-                            Console.WriteLine("Tabla creada exitosamente en el SQL Server.");
+                                using (var command = new SqlCommand(query, connection))
+                                {
+                                    command.ExecuteNonQuery();
+                                    Console.WriteLine("CREATE TABLE ejecutado correctamente.");
+                                }
+                            }
                         }
                         catch (Exception ex)
                         {
@@ -172,7 +176,7 @@ namespace dbf2sql
                     // NO SE QUE HACE ESTO PERO LLENA DE COMAS LA QUERRY
                     /*if (dbfColumn.ColumnOrdinal < dbfTable.Columns.Count ||
                         !options.SkipDeleted)
-                        schemaBuilder.AppendLine(",");*/
+                        schemaBuilder.Append(",");*/
                 }
 
                 if (!options.SkipDeleted) schemaBuilder.AppendLine("  [deleted] [bit] NULL DEFAULT ((0))");

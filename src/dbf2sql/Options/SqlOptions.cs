@@ -14,8 +14,9 @@ namespace dbf2sql.Options
     public class SqlOptions
     {
         [Option("engine", Required = false, HelpText = "Motor sql a utilizar")]
-        public string Engine { get; set; } = "";
-        //public DbEngine Engine { get; set; } = DbEngine.MySql; //todo agregarle a DbEngine una opcion NONE
+        //public string Engine { get; set; } = "";
+        public DbEngine Engine { get; set; } = DbEngine.SqlServer; //todo agregarle a DbEngine una opcion NONE
+        
 
         [Option("connectionstring", Required = false, HelpText = "Cadena de conexión a la base de datos")]
         public string ConnectionString { get; set; } = string.Empty;
