@@ -159,7 +159,7 @@ namespace dbf2sql
         private static string GetSchema(DbfFileOptions options)
         {
             var encoding = GetEncoding();
-            string createTableSql;
+            string query;
 
             using (var dbfTable = new DbfTable(options.Filename, encoding))
             {
@@ -182,10 +182,10 @@ namespace dbf2sql
                 if (!options.SkipDeleted) schemaBuilder.AppendLine("  [deleted] [bit] NULL DEFAULT ((0))");
 
                 schemaBuilder.AppendLine(")");
-                createTableSql = schemaBuilder.ToString();
+                query = schemaBuilder.ToString();
             }
 
-            return createTableSql;
+            return query;
         }
 
         private static Encoding GetEncoding()
