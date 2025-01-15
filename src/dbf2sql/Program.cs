@@ -1,6 +1,9 @@
 ﻿using CommandLine;
 using dbf2sql.Options;
 using DbfDataReader;
+using DS.Foundation.Configuration;
+using Microsoft.Data.SqlClient;
+using System.Globalization;
 using System.Text;
 
 namespace dbf2sql
@@ -27,9 +30,44 @@ namespace dbf2sql
                 .WithParsed<SqlOptions>(sql =>
                 {
                     var engine = sql.Engine;
-                    //OBTENER EL CREATE TABLE PARA SQLSERVER
+                    var connectionString = sql.ConnectionString;
+                    var filePath = sql.FilePath;
 
+                    /*if (sql.Engine == DbEngine.None)
+                    {
+                        Console.WriteLine("Debe especificar un motor SQL usando --engine.");
+                        return;
+                    }*/
 
+                    if (sql.Execute && string.IsNullOrEmpty(connectionString))
+                    {
+                        Console.WriteLine("Debe especificar una cadena de conexión usando --connectionstring para ejecutar el CREATE TABLE.");
+                        return;
+                    }
+
+                    // Generar el CREATE TABLE a partir del archivo .dbf
+                    var options = new DbfFileOptions { Filename = filePath, SkipDeleted = false };
+                    string querry = GetSchema(options);
+                    
+                    Console.WriteLine(querry);
+
+                    if (sql.Execute)
+                    {
+                        try
+                        {
+                            using var connection = new SqlConnection(connectionString);
+                            connection.Open();
+
+                            using var command = new SqlCommand(querry, connection);
+                            command.ExecuteNonQuery();
+
+                            Console.WriteLine("Tabla creada exitosamente en el SQL Server.");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Error al ejecutar el CREATE TABLE: {ex.Message}");
+                        }
+                    }
                 })
                 .WithParsed<DataOptions>(data =>
                 {
@@ -114,30 +152,36 @@ namespace dbf2sql
             }
         }
 
-        private static void PrintSchema(DbfFileOptions options)
+        private static string GetSchema(DbfFileOptions options)
         {
             var encoding = GetEncoding();
+            string createTableSql;
+
             using (var dbfTable = new DbfTable(options.Filename, encoding))
             {
                 var tableName = Path.GetFileNameWithoutExtension(options.Filename);
-                Console.WriteLine($"CREATE TABLE [dbo].[{tableName}]");
-                Console.WriteLine("(");
+                var schemaBuilder = new StringBuilder();
+                schemaBuilder.AppendLine($"CREATE TABLE [dbo].[{tableName}]");
+                schemaBuilder.AppendLine("(");
 
                 foreach (var dbfColumn in dbfTable.Columns)
                 {
                     var columnSchema = ColumnSchema(dbfColumn);
-                    Console.Write($"  {columnSchema}");
+                    schemaBuilder.AppendLine($"  {columnSchema},");
 
-                    if (dbfColumn.ColumnOrdinal < dbfTable.Columns.Count ||
+                    // NO SE QUE HACE ESTO PERO LLENA DE COMAS LA QUERRY
+                    /*if (dbfColumn.ColumnOrdinal < dbfTable.Columns.Count ||
                         !options.SkipDeleted)
-                        Console.Write(",");
-                    Console.WriteLine();
+                        schemaBuilder.AppendLine(",");*/
                 }
 
-                if (!options.SkipDeleted) Console.WriteLine("  [deleted] [bit] NULL DEFAULT ((0))");
+                if (!options.SkipDeleted) schemaBuilder.AppendLine("  [deleted] [bit] NULL DEFAULT ((0))");
 
-                Console.WriteLine(")");
+                schemaBuilder.AppendLine(")");
+                createTableSql = schemaBuilder.ToString();
             }
+
+            return createTableSql;
         }
 
         private static Encoding GetEncoding()
