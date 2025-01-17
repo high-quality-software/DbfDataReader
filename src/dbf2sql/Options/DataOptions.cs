@@ -21,5 +21,14 @@ namespace dbf2sql.Options
 
         [Option("filepath", Required = true, HelpText = "Ruta del archivo .dbf")]
         public string FilePath { get; set; } = "";
+
+        [Option("csvfilepath", HelpText = "Ruta del archivo CSV de salida", Required = false)]
+        public string OutputCsvPath { get; set; } = "output.csv";
+
+        [Option("csv", Default = false, HelpText = "Print as CSV file")]
+        public bool Csv { get; set; }
+
+        [Option(Default = true, HelpText = "Whether to skip deleted records")]
+        public bool SkipDeleted { get; set; }
     }
 }
