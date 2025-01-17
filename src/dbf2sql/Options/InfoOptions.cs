@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace dbf2sql.Options
 {
-    public class DbfFileOptions
+    public class InfoOptions
     {
         [Option(Default = true, HelpText = "Print summary information")]
         public bool Summary { get; set; }

@@ -48,7 +48,7 @@ namespace dbf2sql
                     }
 
                     // Generar el CREATE TABLE a partir del archivo .dbf
-                    var options = new DbfFileOptions { Filename = filePath, SkipDeleted = true };
+                    var options = new InfoOptions { Filename = filePath, SkipDeleted = true };
                     string query = GetSchema(options);
                     
                     Console.WriteLine(query);
@@ -112,7 +112,7 @@ namespace dbf2sql
         }
 
 
-        private static void PrintSummaryInfo(DbfFileOptions options)
+        private static void PrintSummaryInfo(InfoOptions options)
         {
             var encoding = GetEncoding();
             using (var dbfTable = new DbfTable(options.Filename, encoding))
@@ -140,7 +140,7 @@ namespace dbf2sql
             }
         }
 
-        private static void PrintCsv(DbfFileOptions options)
+        private static void PrintCsv(InfoOptions options)
         {
             var encoding = GetEncoding();
             using (var dbfTable = new DbfTable(options.Filename, encoding))
@@ -164,7 +164,7 @@ namespace dbf2sql
             }
         }
 
-        private static string GetSchema(DbfFileOptions options)
+        private static string GetSchema(InfoOptions options)
         {
             var encoding = GetEncoding();
             string query;
