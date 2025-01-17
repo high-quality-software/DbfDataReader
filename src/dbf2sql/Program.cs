@@ -76,27 +76,34 @@ namespace dbf2sql
                 })
                 .WithParsed<DataOptions>(data =>
                 {
-                    var size = data.BatchSize;
+                    //var size = data.BatchSize;
+                    var connectionString = data.ConnectionString;
+                    var filePath = data.FilePath;
 
-                    /*
-                        var options = new DbfDataReaderOptions
-                        {
+                    var options = new DbfDataReaderOptions
+                    {
                         SkipDeletedRecords = true,
-                        Encoding = DbfDataReader.EncodingProvider.GetEncoding(1252)
-                        };
+                        Encoding = GetEncoding()
+                    };
 
-                        using (var dbfDataReader = new DbfDataReader.DbfDataReader(source.FullName, options))
+                    using (var dbfDataReader = new DbfDataReader.DbfDataReader(filePath, options))
+                    {
+                        using (var bulkCopy = new SqlBulkCopy(connectionString))
                         {
-                        while (dbfDataReader.Read())
-                        {
-                        var valueCol1 = dbfDataReader.GetInt32(0);
-                        var valueCol2 = dbfDataReader.GetDecimal(1);
-                        var valueCol3 = dbfDataReader.GetDateTime(2);
-                        var valueCol4 = dbfDataReader.GetInt32(3);
-                        }
-                        }
-                     */
+                            bulkCopy.DestinationTableName = Path.GetFileNameWithoutExtension(filePath);
 
+                            try
+                            {
+                                bulkCopy.WriteToServer(dbfDataReader);
+                                Console.WriteLine("BulkCopy ejecutado correctamente");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.WriteLine($"Error importing: dbf file: '{filePath}', exception: {ex.Message}");
+                            }
+                        }
+                    }
+                     
                 });
 
             //chain
@@ -224,7 +231,7 @@ namespace dbf2sql
                     break;
                 case DbfColumnType.Currency:
                     schema =
-                        $"[{columnName}] [decimal]({dbfColumn.Length + dbfColumn.DecimalCount},{dbfColumn.DecimalCount}) {nullable} DEFAULT (NULL)";
+                        $"[{columnName}] [decimal]({dbfColumn.Length + dbfColumn.DecimalCount},{dbfColumn.DecimalCount}) {nullable}";
                     break;
                 case DbfColumnType.Date:
                     schema = $"[{columnName}] [date] {nullable}";

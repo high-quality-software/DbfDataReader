@@ -23,7 +23,7 @@ namespace dbf2sql.Options
         [Option("execute", Required = false, Default = false, HelpText = "Indica si se debe ejecutar el CREATE TABLE")]
         public bool Execute { get; set; } = false;
         
-        [Option("filepath", Required = true, HelpText = "Ruta del archivo .db")]
+        [Option("filepath", Required = true, HelpText = "Ruta del archivo .dbf")]
         public string FilePath { get; set; } = "";
     }
 }
