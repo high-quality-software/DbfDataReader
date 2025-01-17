@@ -219,7 +219,8 @@ namespace dbf2sql
         {
             var schema = string.Empty;
             var columnName = dbfColumn.ColumnName.ToLowerInvariant();
-            var nullable = (dbfColumn.AllowDBNull == true) ? "NULL" : "NOT NULL";
+            //var nullable = (dbfColumn.AllowDBNull == true) ? "NULL" : "NOT NULL";
+            var nullable = "NULL";
 
             switch (dbfColumn.ColumnType)
             {
