@@ -143,7 +143,9 @@ namespace dbf2sql.VerbRuns
                         schema =
                             $"[{columnName}] [decimal]({dbfColumn.Length + dbfColumn.DecimalCount},{dbfColumn.DecimalCount}) {nullable}";
                     else
-                        schema = $"[{columnName}] [int] {nullable}";
+                        schema = (dbfColumn.Length > 10) 
+                            ? $"[{columnName}] [bigint] {nullable}" 
+                            : $"[{columnName}] [int] {nullable}";
                     break;
                 case DbfColumnType.SignedLong:
                     schema = $"[{columnName}] [int] {nullable}";
