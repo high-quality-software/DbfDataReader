@@ -141,9 +141,9 @@ namespace dbf2sql.VerbRuns
                 case DbfColumnType.Number:
                     if (dbfColumn.DecimalCount > 0)
                         schema =
-                            $"[{columnName}] [decimal]({dbfColumn.Length + dbfColumn.DecimalCount},{dbfColumn.DecimalCount}) {nullable}";
+                            $"[{columnName}] [decimal]({20},{5}) {nullable}";
                     else
-                        schema = (dbfColumn.Length > 10) 
+                        schema = (dbfColumn.Length > 9) 
                             ? $"[{columnName}] [bigint] {nullable}" 
                             : $"[{columnName}] [int] {nullable}";
                     break;
