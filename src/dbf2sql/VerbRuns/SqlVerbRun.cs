@@ -114,15 +114,24 @@ namespace dbf2sql.VerbRuns
                 case DbfColumnType.Character:
                     schema = $"[{columnName}] [nvarchar]({dbfColumn.Length}) {nullable}";
                     break;
-                case DbfColumnType.Currency:
-                    schema =
-                        $"[{columnName}] [decimal]({dbfColumn.Length + dbfColumn.DecimalCount},{dbfColumn.DecimalCount}) {nullable}";
-                    break;
                 case DbfColumnType.Date:
                     schema = $"[{columnName}] [date] {nullable}";
                     break;
                 case DbfColumnType.DateTime:
                     schema = $"[{columnName}] [datetime] {nullable}";
+                    break;
+
+                
+                case DbfColumnType.General:
+                    schema = $"[{columnName}] [nvarchar]({dbfColumn.Length})  {nullable}";
+                    break;
+                case DbfColumnType.Memo:
+                    schema = $"[{columnName}] [ntext] {nullable}";
+                    break;
+
+                case DbfColumnType.Currency:
+                    schema =
+                        $"[{columnName}] [decimal]({dbfColumn.Length + dbfColumn.DecimalCount},{dbfColumn.DecimalCount}) {nullable}";
                     break;
                 case DbfColumnType.Double:
                     schema =
@@ -132,23 +141,18 @@ namespace dbf2sql.VerbRuns
                     schema =
                         $"[{columnName}] [decimal]({dbfColumn.Length + dbfColumn.DecimalCount},{dbfColumn.DecimalCount}) {nullable}";
                     break;
-                case DbfColumnType.General:
-                    schema = $"[{columnName}] [nvarchar]({dbfColumn.Length})  {nullable}";
-                    break;
-                case DbfColumnType.Memo:
-                    schema = $"[{columnName}] [ntext]  {nullable}";
-                    break;
                 case DbfColumnType.Number:
                     if (dbfColumn.DecimalCount > 0)
                         schema =
-                            $"[{columnName}] [decimal]({20},{5}) {nullable}";
+                            $"[{columnName}] [decimal]({dbfColumn.Length + dbfColumn.DecimalCount},{dbfColumn.DecimalCount}) {nullable}";
                     else
                         schema = (dbfColumn.Length > 9) 
                             ? $"[{columnName}] [bigint] {nullable}" 
                             : $"[{columnName}] [int] {nullable}";
                     break;
+
                 case DbfColumnType.SignedLong:
-                    schema = $"[{columnName}] [int] {nullable}";
+                    schema = $"[{columnName}] [bigint] {nullable}";
                     break;
             }
 

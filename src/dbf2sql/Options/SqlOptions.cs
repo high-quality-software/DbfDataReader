@@ -10,7 +10,11 @@ using System.Threading.Tasks;
 
 namespace dbf2sql.Options
 {
+    /// <summary>
+    /// sql --filepath=c:\storesys\bases\CAJQUE.dbf --connectionstring="Password=47qm7bcr;Persist Security Info=True;User ID=sa;Initial Catalog=DIP;Data Source=.;Encrypt=False;" --execute
+    /// </summary>
     [Verb("sql", HelpText = "permite crear sentencias sql")]
+    
     public class SqlOptions
     {
         [Option("engine", Required = false, HelpText = "Motor sql a utilizar")]
